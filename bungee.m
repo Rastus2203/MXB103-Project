@@ -28,7 +28,7 @@ vEuler = ModEulerMethod(vFunc, 0, 0, interval);
 results = ModEulerMethod.CalcDependant(yEuler, vEuler, intervalCount);
 
 % Array for Height
-heightList = H - results(1,:);
+heightList = results(1,:);
 
 % Array for Velocity
 velList = results(2,:);
@@ -36,48 +36,59 @@ velList = results(2,:);
 % Array for time
 x = linspace(0,timeSeconds, intervalCount + 1);
   
-% Plot Velocity over Time
-if false
-    figure;
-    plot(x, velList);
-    title("Plot of Velocity over Time");
-    xlabel("Time (s)");
-    ylabel("Velocity (m/s)");
+% Finding max speed and the moment in which it occured
+maxSpeed = max(abs(velList));
+maxSpeedTime = find(abs(velList) == maxSpeed) * interval;
+
+
+% Finding the accerlation with numerical differentiation
+accelList = zeros(1, intervalCount);
+for i = 1:intervalCount
+    t = i * interval;
+    accelList(i) = ApproxDerivative(@(t,y) y, t, velList(i), t + interval, velList(i+1));
 end
+accelList(end+1) = accelList(end);
 
-% Plot Height over Time
+
+
+
+% Finding max acceleration and the moment in which it occured
+maxAccel = max(abs(accelList));
+maxAccelTime = find(abs(accelList) == maxAccel) * interval;
+
+
+% Finding total distance travelled
 if false
-    figure;
-    
-    plot(x, heightList);
-    title("Plot of Height over Time");
-    
-    xlabel("Time (s)");
-    ylabel("Height (m)");
-    %axis([0, timeSeconds, 0, H]);
-end
-
-% Combines the Height and Velocity Plots
-if false
-    figure;
-    hold on;
-    title("Plot of Height and Velocity over Time");
-    xlabel("Time (s)")
-
-    yyaxis left
-    ylabel("Height (m)");
-    plot(x, heightList);
-
-    yyaxis right
-    ylabel("Velocity (m/s)");
-    plot(x, -velList);
+    totalDist = TrapezoidalInt(@(x) abs(velList(x)), 0, 60, interval);
 end
 
 
+% Finding the time offset to trigger capturing the image
+cameraHeight = JumpPointHeight - DeckHeight;
+
+firstFallEnd = find(heightList == max(heightList));
+belowCamera = find(heightList(1:firstFallEnd) < cameraHeight);
+aboveCamera = find(heightList(1:firstFallEnd) > cameraHeight);
+
+x = [belowCamera(end - 1), belowCamera(end), aboveCamera(1), aboveCamera(2)];
+y = heightList(x);
+x = x * interval;
+
+cameraHeightPoly = Lagrange(x, y);
 
 
 
 
+
+
+
+
+
+% Custom Plotter class to easily draw plots of commonly used variables
+p = Plotter(timeSeconds, interval, intervalCount);
+p.height.Data = heightList;
+p.vel.Data = velList;
+p.accel.Data = accelList;
 
 
 
