@@ -27,61 +27,17 @@ vEuler = ModEulerMethod(vFunc, 0, 0, interval);
 
 results = ModEulerMethod.CalcDependant(yEuler, vEuler, intervalCount);
 
-% Array for Height
-heightList = H - results(1,:);
+% Graphing Height/Time
+if true
+    yList = H - results(1,:);
+    x = linspace(0,timeSeconds, intervalCount + 1);
 
-% Array for Velocity
-velList = results(2,:);
-
-% Array for time
-x = linspace(0,timeSeconds, intervalCount + 1);
-  
-% Plot Velocity over Time
-if false
     figure;
-    plot(x, velList);
-    title("Plot of Velocity over Time");
-    xlabel("Time (s)");
-    ylabel("Velocity (m/s)");
+    plot(x, yList);
+    axis([0, timeSeconds, 20, H]);
 end
 
-% Plot Height over Time
-if false
-    figure;
-    
-    plot(x, heightList);
-    title("Plot of Height over Time");
-    
-    xlabel("Time (s)");
-    ylabel("Height (m)");
-    %axis([0, timeSeconds, 0, H]);
-end
-
-% Combines the Height and Velocity Plots
-if false
-    figure;
-    hold on;
-    title("Plot of Height and Velocity over Time");
-    xlabel("Time (s)")
-
-    yyaxis left
-    ylabel("Height (m)");
-    plot(x, heightList);
-
-    yyaxis right
-    ylabel("Velocity (m/s)");
-    plot(x, -velList);
-end
-
-
-
-
-
-
-
-
-
-
+% Graphing Velocity/Time
 
 
 
