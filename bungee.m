@@ -12,4 +12,34 @@ C = DragCoefficient;
 L = RopeLength;
 K = RopeSpringConstant;
 g = Gravity;
+m = HumanMass;
+
+
+timeSeconds = 60;
+interval = 0.001;
+intervalCount = timeSeconds * (1/interval);
+
+yFunc = @(v, y) (v);
+yEuler = ModEulerMethod(yFunc, 0, 0, interval);
+
+vFunc = @(y, v) (g - (C/m) * abs(v) * v - max(0, (K/m) * (y-L)));
+vEuler = ModEulerMethod(vFunc, 0, 0, interval);
+
+
+
+
+results = ModEulerMethod.CalcDependant(yEuler, vEuler, intervalCount);
+yList = results(1,:);
+yList = H - yList;
+x = linspace(0,timeSeconds, intervalCount + 1);
+%vList = results(2,:);
+
+figure;
+plot(x, yList);
+axis([0, timeSeconds, 20, H]);
+
+
+
+
+
 
