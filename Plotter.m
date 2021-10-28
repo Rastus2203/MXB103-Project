@@ -4,21 +4,24 @@ classdef Plotter
             "Name", "Acceleration", ...
             "Unit", "m/s/s", ...
             "Data", "", ...
-            "Func", "" ...
+            "Func", "", ...
+            "Axes", [-inf, inf, -inf, inf] ...
             );
     
         vel = struct( ...
             "Name", "Velocity", ...
             "Unit", "m/s", ...
             "Data", "", ...
-            "Func", "" ...
+            "Func", "", ...
+            "Axes", [-inf, inf, -inf, inf] ...
             );
         
         height = struct( ...
             "Name", "Height", ...
             "Unit", "m", ...
             "Data", "", ...
-            "Func", @() yline(25) ...
+            "Func", @() yline(25), ...
+            "Axes", [-inf, inf, 0, 74] ...
             );
         
         time = struct( ...
@@ -38,29 +41,34 @@ classdef Plotter
         end
         
         
-        function QuickPlot(obj, type)
+        function ax = QuickPlot(obj, type, subtitle)
             figure;
     
             p = plot(obj.x, type.Data);
             ax = p.Parent;
-            
-            title("Plot of " + type.Name + " over Time");
+            ax.XLim = type.Axes(1:2);
+            ax.YLim = type.Axes(3:4);
+            title(["Plot of " + type.Name + " over Time", subtitle]);
             xlabel("Time (s)");
             ylabel(type.Name + " (" + type.Unit + ")");
             set(ax, 'Ydir', 'reverse');
+            
             type.Func();
         end
         
-        function QuickPlot2(obj, type1, type2)
-            figure;
+        function f = QuickPlot2(obj, type1, type2, subtitle)
+            f = figure;
             hold on;
-            title("Plot of " + type1.Name + " and " + type2.Name + " over Time");
+            title(["Plot of " + type1.Name + " and " + type2.Name + " over Time", subtitle]);
             xlabel("Time (s)")
+            
 
             yyaxis left
             ylabel(type1.Name + " (" + type1.Unit + ")");
             p = plot(obj.x, type1.Data);
             ax = p.Parent;
+            ax.XLim = type1.Axes(1:2);
+            ax.YLim = type1.Axes(3:4);
             set(ax, 'Ydir', 'reverse');
             type1.Func();
 
@@ -68,6 +76,8 @@ classdef Plotter
             ylabel(type2.Name + " (" + type2.Unit + ")");
             p = plot(obj.x, type2.Data);
             ax = p.Parent;
+            ax.XLim = type2.Axes(1:2);
+            ax.YLim = type2.Axes(3:4);
             set(ax, 'Ydir', 'reverse');
             type2.Func();
         end

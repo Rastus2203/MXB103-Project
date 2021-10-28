@@ -15,7 +15,7 @@ classdef Lagrange
             obj.y = y;
         end
         
-        function result = Calculate(x)
+        function result = Calculate(obj, x)
             
             sum = 0;
             for i = 1:obj.n

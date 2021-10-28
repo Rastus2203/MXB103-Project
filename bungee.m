@@ -3,11 +3,15 @@ JumpPointHeight = 74;       % Height of Jump Point              : m
 DeckHeight = 31;            % Deck Height                       : m
 DragCoefficient = 0.9;      % Drag Coefficient                  : kg/m
 HumanMass = 80;             % Mass of Jumper                    : kg
-RopeLength = 25;            % Length of Bungee Rope             : m
-RopeSpringConstant = 90;    % Spring Constant of Bungee Rope    : N/m
+
+%RopeLength = 25;            % Length of Bungee Rope             : m
+%RopeSpringConstant = 90;    % Spring Constant of Bungee Rope    : N/m
+RopeLength = 43.5;
+RopeSpringConstant = 79.5;
 Gravity = 9.8;              % Gravitational Acceleration        : m/s^2
 
 H = JumpPointHeight;
+D = DeckHeight;
 C = DragCoefficient;
 L = RopeLength;
 K = RopeSpringConstant;
@@ -75,7 +79,26 @@ y = heightList(x);
 x = x * interval;
 
 cameraHeightPoly = Lagrange(x, y);
+modifiedHeightPoly = @(x) (cameraHeightPoly.Calculate(x) - (H-D));
+root = SecantRoot(modifiedHeightPoly, x(1), x(2), 3);
 
+
+% Water touch investigation
+% Model Human height = 1.75m
+% Need to find where rope attaches
+% https://www.researchgate.net/publication/283532449_Modeling_and_Simulation_of_a_Passive_Lower-Body_Mechanism_for_Rehabilitation
+% Reference to paper containing chart of human proportions
+% Reference placed waist at 100.4cm and chest at 149.2cm
+% A bungee harness typically attaches around the stomach area, which is an
+% estimated 40% between the waist and chest measurements on the reference.
+% We will therefore assume that the Model Users feet are an estimated
+% 0.4 * (149.2 - 100.4) + 100.4 ~= 119.92cm (1.1992m) below the rope attach point.
+humanHeightOffset = 1.1992;
+
+distanceToWater = JumpPointHeight - (max(abs(heightList)) + humanHeightOffset);
+
+disp(distanceToWater);
+disp(maxAccel);
 
 
 
@@ -89,6 +112,16 @@ p = Plotter(timeSeconds, interval, intervalCount);
 p.height.Data = heightList;
 p.vel.Data = velList;
 p.accel.Data = accelList;
+
+p.height.Data = p.height.Data + humanHeightOffset;
+p.QuickPlot(p.height);
+$With the new rope parameters K=79.5 and L = 43.5m
+
+%ax = p.QuickPlot(p.height);
+%ax.NextPlot = 'add';
+%plot(root, (H-D), '.k', "MarkerSize", 20);
+
+
 
 
 
