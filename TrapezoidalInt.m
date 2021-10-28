@@ -1,6 +1,5 @@
 function [result] = TrapezoidalInt(f, a, b, h)
-    result = 0;
-    
+% Performs numerical integration through use of the trapezoidal rule.
     range = b - a;
     N = range / h;
     

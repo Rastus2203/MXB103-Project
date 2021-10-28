@@ -1,5 +1,9 @@
 classdef Plotter
+    % A class to simplify drawing plots. Most of the styles I need are
+    % already preset here, they just need data.
     properties
+        % These effectively act as presets for graphs that can be easily
+        % selected to use or modified.
         accel = struct( ...
             "Name", "Acceleration", ...
             "Unit", "m/s/s", ...
@@ -33,6 +37,7 @@ classdef Plotter
     end
     
     methods
+        % Instantiate the plotter, this requires time information.
         function obj = Plotter(seconds, interval, intervalCount)
             obj.time.Seconds = seconds;
             obj.time.Interval = interval;
@@ -40,8 +45,15 @@ classdef Plotter
             obj.x = linspace(0, seconds, intervalCount + 1);
         end
         
-        
-        function ax = QuickPlot(obj, type, subtitle)
+        % Plots a single 2D line graph according to the presets set above.
+        function ax = QuickPlot(obj, type, subtitle, func)
+            if (~exist('subtitle', 'var'))
+                subtitle = "";
+            end
+            if (~exist('func', 'var'))
+                func = false;
+            end
+            
             figure;
     
             p = plot(obj.x, type.Data);
@@ -52,11 +64,21 @@ classdef Plotter
             xlabel("Time (s)");
             ylabel(type.Name + " (" + type.Unit + ")");
             set(ax, 'Ydir', 'reverse');
-            
-            type.Func();
+            if (func)
+                type.Func();
+            end
         end
         
-        function f = QuickPlot2(obj, type1, type2, subtitle)
+        % Plots two line graphs on the same axis according to the presets
+        % set above.
+        function f = QuickPlot2(obj, type1, type2, subtitle, func)
+            if (~exist('subtitle', 'var'))
+                subtitle = "";
+            end
+            if (~exist('func', 'var'))
+                func = false;
+            end
+            
             f = figure;
             hold on;
             title(["Plot of " + type1.Name + " and " + type2.Name + " over Time", subtitle]);
@@ -70,7 +92,9 @@ classdef Plotter
             ax.XLim = type1.Axes(1:2);
             ax.YLim = type1.Axes(3:4);
             set(ax, 'Ydir', 'reverse');
-            type1.Func();
+            if (func)
+                type1.Func();
+            end
 
             yyaxis right
             ylabel(type2.Name + " (" + type2.Unit + ")");
@@ -79,7 +103,9 @@ classdef Plotter
             ax.XLim = type2.Axes(1:2);
             ax.YLim = type2.Axes(3:4);
             set(ax, 'Ydir', 'reverse');
-            type2.Func();
+            if (func)
+                type2.Func();
+            end
         end
     end
 end

@@ -136,11 +136,7 @@ classdef ModEulerMethod < handle
                 
                 eulerA.AddNew(newB, newA);
                 eulerB.AddNew(newA, newB);
-                
-                if (iter > 40) 
-                    a = 1;
-                end
-                
+                                
                 iter = iter + 1;                
             end
             result = [eulerA.wList; eulerB.wList];
